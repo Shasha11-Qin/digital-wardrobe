@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import supabase from './supabaseClient';
+// import supabase from './supabaseClient';
 import './App.css';
 
 const categories = [
@@ -21,12 +21,13 @@ function App() {
   useEffect(() => {
     const fetchClothes = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from('clothes').select('*');
-      console.log('Supabase clothes data:', data); // 数据库里的数据是：
-      if (error) {
-        setClothes([]);
-      } else {
+      try {
+        const res = await fetch('/api/clothes');
+        if (!res.ok) throw new Error('网络错误');
+        const data = await res.json();
         setClothes(data || []);
+      } catch (err) {
+        setClothes([]);
       }
       setLoading(false);
     };
