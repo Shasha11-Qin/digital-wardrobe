@@ -20,17 +20,22 @@ function App() {
 
   useEffect(() => {
     const fetchClothes = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/clothes');
-        if (!res.ok) throw new Error('网络错误');
-        const data = await res.json();
-        setClothes(data || []);
-      } catch (err) {
-        setClothes([]);
-      }
-      setLoading(false);
-    };
+  try {
+    const res = await fetch('/api/clothes');
+    const data = await res.json();
+    
+    // 关键点：检查 data 是否真的是数组
+    if (Array.isArray(data)) {
+      setClothes(data);
+    } else {
+      console.error("后端没给数组，给的是这个：", data);
+      setClothes([]); // 如果不是数组，给个空数组，防止 filter 崩溃
+    }
+  } catch (err) {
+    console.error("获取数据失败:", err);
+    setClothes([]); 
+  }
+};
     fetchClothes();
   }, []);
 
